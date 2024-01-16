@@ -18,10 +18,15 @@ interface ChatBubbleProps {
     onCopy?: () => void,
 }
 
-export default function ChatBubble({ message, time, isUser, onThumbsUp, onThumbsDown, rate }: ChatBubbleProps) {
+export default function ChatBubble({
+    message,
+    time,
+    isUser,
+    onThumbsUp,
+    onThumbsDown,
+    rate
+}: ChatBubbleProps) {
     const isBot = !isUser;
-    const isRateExist = typeof rate === 'object' && rate !== null;
-
     return (
         <>
             <div className={`chat ${isUser ? 'chat-end' : 'chat-start'} my-1 flex-1`}>
@@ -32,9 +37,7 @@ export default function ChatBubble({ message, time, isUser, onThumbsUp, onThumbs
                         </span>
                     </div>
                 }
-                <div
-                    className={`chat-bubble rounded-md ${isUser ? 'bg-base-300 text-zinc-600' : 'bg-primary'}`}
-                >
+                <div className={`chat-bubble rounded-md ${isUser ? 'bg-base-300 text-zinc-600' : 'bg-primary'}`}>
                     <div>{message}</div>
                     <div className={`flex items-end ${isBot ? 'justify-between' : 'justify-end'}`}>
                         {isBot &&
@@ -42,10 +45,10 @@ export default function ChatBubble({ message, time, isUser, onThumbsUp, onThumbs
                                 <button className="btn btn-xs btn-ghost"><RxReload /></button>
                                 <button className="btn btn-xs btn-ghost"><MdContentCopy /></button>
                                 <button onClick={onThumbsUp} className="btn btn-xs btn-ghost">
-                                    {rate?.isLike ? <HiHandThumbUp/> : <HiOutlineHandThumbUp />}
+                                    {rate?.isLike ? <HiHandThumbUp /> : <HiOutlineHandThumbUp />}
                                 </button>
                                 <button onClick={onThumbsDown} className="btn btn-xs btn-ghost">
-                                    {rate?.isDislike ? <HiThumbDown/> : <HiOutlineThumbDown />}
+                                    {rate?.isDislike ? <HiThumbDown /> : <HiOutlineThumbDown />}
                                 </button>
                             </div>
                         }

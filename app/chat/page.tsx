@@ -5,14 +5,15 @@ import axios from 'axios';
 import moment from 'moment';
 import ChatBubble from "@/components/ChatBubble";
 import Header from "../../components/Header";
-import Modal from '@/components/Modal';
 import EmptyState from '@/components/EmptyState';
-import { IoMdArrowUp } from 'react-icons/io';
 import { useManipulateMessage } from '@/hooks/useManipulateMessage';
 import { Messages, MessageProps } from '@/types';
-import { OPENAI_API_KEY, OPENAI_COMPLETION_API } from '@/configs';
-import { FaRegTrashAlt } from "react-icons/fa";
-import { HiOutlineHandThumbUp, HiOutlineHandThumbDown, HiOutlineChatBubbleLeftRight } from "react-icons/hi2"
+import { OPENAI_COMPLETION_API, axiosConfig } from '@/configs';
+import DeleteToolbar from './modules/components/DeleteToolbar';
+import ChatInput from './modules/components/ChatInput';
+import ChatCheckbox from './modules/components/ChatCheckbox';
+import RateModal from './modules/components/RateModal';
+import DeleteConfirmationModal from './modules/components/DeleteConfirmationModal';
 
 export default function Chatbox() {
 
@@ -27,8 +28,6 @@ export default function Chatbox() {
     const [rateType, setRateType] = useState<string>('like');
 
     const { messages, updateMessages, deleteMessages, rateMessages } = useManipulateMessage();
-
-    const handleEnableDeleteMode = () => setDeleteMode(true);
 
     const handleDisableDeleteMode = () => {
         setSelectedChats([])
@@ -57,6 +56,10 @@ export default function Chatbox() {
         handleDisableDeleteMode();
     }
 
+    const handleEnableDeleteMode = () => setDeleteMode(true);
+
+    const handleCloseDeleteModal = () => setShowDeleteModal(false);
+
     const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => setInput(e.target.value);
 
     const onChangeInputRate = (e: ChangeEvent<HTMLTextAreaElement>) => setInputRate(e.target.value);
@@ -77,22 +80,16 @@ export default function Chatbox() {
     }
 
     const submitToChatGPT = (messages: Messages) => {
+        setIsTyping(true);
         const formattedMessages = messages.map(({ role, content }) => ({ role, content }))
         const requestBody = {
             'model': 'gpt-3.5-turbo',
             'messages': formattedMessages
         };
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${OPENAI_API_KEY}`
-            }
-        }
-        setIsTyping(true);
         axios.post(
             OPENAI_COMPLETION_API,
             JSON.stringify(requestBody),
-            config
+            axiosConfig
         ).then(res => {
             const responseMessage = {
                 ...res.data.choices[0].message,
@@ -100,86 +97,10 @@ export default function Chatbox() {
             }
             updateMessages([...messages, responseMessage]);
             setIsTyping(false);
-
         }).catch(err => {
             console.log('clg error', err);
             setIsTyping(false);
         });
-    }
-
-    const deleteConfirmationModal = () => {
-        return (
-            <Modal
-                name='delete-confirm'
-                visible={showDeleteModal}
-                onClose={() => setShowDeleteModal(false)}
-            >
-                <div>
-                    <h3 className="font-bold text-lg mb-4">Delete Chat?</h3>
-                    <p>You will delete this chat, chats that have been deleted cannot be recovered</p>
-                    <div className="modal-action flex flex-col space-y-3">
-                        <button
-                            onClick={handleDeleteChat}
-                            className='btn btn-sm btn-error rounded-full text-white'
-                        >
-                            Delete
-                        </button>
-                        <button
-                            className="btn btn-sm btn-ghost rounded-full"
-                            onClick={() => setShowDeleteModal(false)}
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            </Modal>
-        )
-    }
-
-    const rateModal = () => {
-        const isLike = rateType === 'like';
-        return (
-            <Modal
-                name='rate'
-                visible={showRateModal}
-                onClose={() => setShowRateModal(false)}
-            >
-                <div>
-                    <h3 className="font-bold text-lg mb-4">Rate</h3>
-                    <div className={`rounded-full w-10 h-10 flex justify-center items-center mx-auto ${isLike ? 'bg-primary-content text-primary' : 'bg-red-50 text-error'}`}>
-                        { isLike ? 
-                            <HiOutlineHandThumbUp size={20} />
-                            :
-                            <HiOutlineHandThumbDown size={20} />
-                        }
-                    </div>
-                    <div className='text-center my-3'>
-                        <h3 className="font-bold text-lg mt-3">You {isLike ? 'like' : 'dislike'} the AI's reply</h3>
-                        <p>Tell us about your experience regarding this chat reply</p>
-                        <textarea 
-                            className="textarea textarea-bordered w-full mt-3"
-                            placeholder="Type your opinion..."
-                            onChange={onChangeInputRate}
-                        >
-                        </textarea>
-                    </div>
-                    <div className="modal-action flex flex-col space-y-3">
-                        <button
-                            onClick={handleRateChat}
-                            className='btn btn-sm btn-primary rounded-full text-white'
-                        >
-                            Submit
-                        </button>
-                        <button
-                            className="btn btn-sm btn-ghost rounded-full"
-                            onClick={handleCloseRateModal}
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            </Modal>
-        )
     }
 
     const handleRateUp = (index: number) => {
@@ -222,14 +143,12 @@ export default function Chatbox() {
                     return (
                         <div className='flex items-center'>
                             {deleteMode &&
-                                <div className={isUser ? 'order-last ml-2' : 'order-first mr-2'}>
-                                    <input
-                                        type="checkbox"
-                                        className="checkbox"
-                                        checked={selectedChats.includes(index)}
-                                        onChange={() => handleCheckbox(index)}
-                                    />
-                                </div>
+                                <ChatCheckbox
+                                    index={index}
+                                    isUser={isUser}
+                                    onClickCheckbox={() => handleCheckbox(index)}
+                                    selectedChats={selectedChats}
+                                />
                             }
                             <ChatBubble
                                 index={index}
@@ -246,43 +165,38 @@ export default function Chatbox() {
             </div>
             <div className="flex flex-col w-full h-24 p-5 justify-center bg-base-200">
                 {deleteMode ?
-                    <div className='flex justify-between'>
-                        <div className='grid grid-cols-2 items-center divide-x divide-zinc-500'>
-                            <span className='text-sm'>{selectedChats.length} Selected</span>
-                            <span>
-                                <button onClick={handleSelectAll} className='btn btn-sm btn-ghost'>Select All</button>
-                            </span>
-                        </div>
-                        <button
-                            onClick={() => setShowDeleteModal(true)}
-                            className="btn btn-sm btn-ghost text-red-500 flex"
-                            disabled={selectedChats.length === 0}
-                        >
-                            <FaRegTrashAlt />Delete
-                        </button>
-                    </div>
+                    <DeleteToolbar
+                        selectedChats={selectedChats}
+                        handleSelectAll={handleSelectAll}
+                        onShowDeleteModal={() => setShowDeleteModal(true)}
+                    />
                     :
-                    <div className='relative mx-3'>
-                        <input
-                            type="text"
-                            value={input}
-                            onChange={onChangeInput}
-                            onKeyDown={handleEnterKey}
-                            placeholder="Type message..."
-                            className="input input-bordered input-primary w-full"
-                        />
-                        <button
-                            onClick={handleSubmitMessage}
-                            className="btn btn-primary btn-sm rounded-full w-9 h-9 absolute right-1 top-[0.35rem]"
-                            disabled={!input}
-                        >
-                            <span><IoMdArrowUp size={20} /></span>
-                        </button>
-                    </div>
+                    <ChatInput
+                        input={input}
+                        onChangeInput={onChangeInput}
+                        onEnterKey={handleEnterKey}
+                        onSubmitMessage={handleSubmitMessage}
+
+                    />
                 }
             </div>
-            {showDeleteModal && deleteConfirmationModal()}
-            {showRateModal && rateModal()}
+            {showDeleteModal &&
+                <DeleteConfirmationModal
+                    onDeleteChat={handleDeleteChat}
+                    onCloseDeleteModal={handleCloseDeleteModal}
+                    rateType={rateType}
+                    selectedChats={selectedChats}
+                    showDeleteModal={showDeleteModal}
+                />}
+            {showRateModal &&
+                <RateModal
+                    rateType={rateType}
+                    handleRateChat={handleRateChat}
+                    onChangeInputRate={onChangeInputRate}
+                    selectedChats={selectedChats}
+                    showRateModal={showRateModal}
+                    onCloseRateModal={handleCloseRateModal}
+                />}
         </div>
     )
 }
