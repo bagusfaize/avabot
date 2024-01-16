@@ -1,6 +1,7 @@
 ## About The Project
 
-![preview](https://github.com/bagusfaize/B10K5/assets/50720858/8ff68610-80ec-48d7-86ed-12d698ede192)(https://github.com/bagusfaize/B10K5/assets/50720858/4bb1816c-ae13-4ebb-84e4-dac417b333fc)
+![preview](https://github.com/bagusfaize/B10K5/assets/50720858/8ff68610-80ec-48d7-86ed-12d698ede192)
+(https://github.com/bagusfaize/B10K5/assets/50720858/4bb1816c-ae13-4ebb-84e4-dac417b333fc)
 
 ## GitHub Explorer
 GitHub Exporer is an application used for search github users and see their repositories in a simple and fun way.
