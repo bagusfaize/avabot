@@ -7,8 +7,12 @@ import { Messages } from '@/types';
 export const useManipulateMessage = () => {
 
     const getInitialMessages = () => {
-        const storedMessages = localStorage.getItem('messages');
-        return storedMessages ? JSON.parse(storedMessages) : [];
+        if (typeof localStorage !== 'undefined') {
+            const storedMessages = localStorage.getItem('messages');
+            return storedMessages ? JSON.parse(storedMessages) : [];
+        } else {
+            return [];
+        }
     }
 
     const [messages, setMessages] = useState<Messages>(getInitialMessages());
