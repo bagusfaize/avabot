@@ -1,7 +1,6 @@
 ## About The Project
 
-![preview1](https://github.com/bagusfaize/B10K5/assets/50720858/4534e876-1a5c-44ee-be37-1dc454d9a4ba)
-![preview2](https://github.com/bagusfaize/B10K5/assets/50720858/4151aa4a-436f-4ea0-896d-0e6aed63b912)
+![MixCollage-16-Jan-2024-10-14-AM-7649](https://github.com/bagusfaize/B10K5/assets/50720858/1ca98ee6-2726-4293-a82b-15fc1d71ed99)
 
 ## Chatbot App
 Avabot simple chatbot app powered by OpenAI API.
