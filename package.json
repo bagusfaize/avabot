@@ -9,7 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "ai": "^2.2.31",
+    "axios": "^1.6.5",
+    "moment": "^2.30.1",
     "next": "14.0.4",
+    "openai": "^4.24.7",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.49.3",
