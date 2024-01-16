@@ -1,11 +1,11 @@
 ## About The Project
 
-![preview2](https://github.com/bagusfaize/B10K5/assets/50720858/da2e7e14-943b-4097-92a0-389e86476bbf)
-![preview](https://github.com/bagusfaize/B10K5/assets/50720858/8ff68610-80ec-48d7-86ed-12d698ede192)
+![preview1](https://github.com/bagusfaize/B10K5/assets/50720858/4534e876-1a5c-44ee-be37-1dc454d9a4ba)
+![preview2](https://github.com/bagusfaize/B10K5/assets/50720858/4151aa4a-436f-4ea0-896d-0e6aed63b912)
 
-## GitHub Explorer
-GitHub Exporer is an application used for search github users and see their repositories in a simple and fun way.
-This application comes with simple yet fun user interface and responsive web design to ensure user enjoy using this application. 
+## Chatbot App
+Avabot simple chatbot app powered by OpenAI API.
+This application use gpt-3.5-turbo for the API model.
 
 ## Built with
 This application built with NextJS 14 with app directories. Also use these tech stack :
